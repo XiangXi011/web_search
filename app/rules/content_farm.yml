@@ -1,0 +1,23 @@
+content_farms:
+  - csdn.net
+  - jianshu.com
+  - zhihu.com
+  - baijiahao.baidu.com
+  - sohu.com
+  - 163.com
+  - toutiao.com
+  - 51cto.com
+  - iteye.com
+  - oschina.net
+
+seo_spam_indicators:
+  - "下载"
+  - "破解"
+  - "激活码"
+  - "序列号"
+  - "免费领"
+  - "优惠券"
+  - "博彩"
+  - "赌"
+  - "澳门"
+  - "威尼斯"

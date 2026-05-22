@@ -1,0 +1,125 @@
+server:
+  host: "0.0.0.0"
+  port: 8011
+
+searxng:
+  base_url: "http://searxng:8080"
+  search_path: "/search"
+  default_timeout_seconds: 3.5
+  global_deadline_seconds: 4.0
+
+redis:
+  url: "redis://redis:6379/0"
+  cache_ttl_seconds: 3600
+  cooldown_prefix: "engine_cooldown:"
+  cache_prefix: "search_cache:"
+
+search:
+  default_limit: 10
+  max_limit: 20
+  enable_partial_results: true
+  min_results_before_fallback: 3
+  enable_commercial_fallback: false
+
+cooldown:
+  http_403_seconds: 900
+  http_429_seconds: 900
+  captcha_seconds: 1800
+  timeout_fail_threshold: 5
+  timeout_cooldown_seconds: 300
+  connection_fail_seconds: 180
+
+profiles:
+  general_cn:
+    engines:
+      - bing
+      - 360search
+      - sogou
+      - quark
+      - baidu
+      - yandex
+    language: "zh-CN"
+    timeout_seconds: 3.5
+
+  tech:
+    engines:
+      - github
+      - stackoverflow
+      - pypi
+      - npm
+      - mdn
+      - microsoft learn
+      - bing
+    language: "all"
+    timeout_seconds: 3.5
+
+  wechat:
+    engines:
+      - sogou wechat
+      - sogou
+      - bing
+    language: "zh-CN"
+    timeout_seconds: 4.0
+
+  research:
+    engines:
+      - arxiv
+      - crossref
+      - openalex
+      - bing
+      - yandex
+    language: "all"
+    timeout_seconds: 4.0
+
+  fresh_cn:
+    engines:
+      - bing
+      - 360search
+      - sogou
+      - quark
+      - baidu
+    language: "zh-CN"
+    time_range: "month"
+    timeout_seconds: 3.5
+
+scoring:
+  weights:
+    searxng_score: 0.25
+    domain_authority: 0.25
+    keyword_match: 0.20
+    source_type: 0.15
+    engine_consensus: 0.10
+    freshness: 0.05
+
+  source_type_scores:
+    official_doc: 1.0
+    github_repo: 0.95
+    academic: 0.9
+    government: 0.9
+    package_registry: 0.85
+    github_issue: 0.8
+    vendor_blog: 0.75
+    media: 0.65
+    community: 0.55
+    wechat_article: 0.45
+    unknown: 0.4
+    content_farm: 0.3
+    seo_spam: 0.1
+
+dedup:
+  default_max_per_domain: 2
+  domain_limits:
+    github.com: 4
+    arxiv.org: 4
+    docs.python.org: 4
+    developer.mozilla.org: 4
+    learn.microsoft.com: 4
+    python.langchain.com: 4
+    langchain-ai.github.io: 4
+    docs.github.com: 4
+    docs.docker.com: 4
+    docs.redis.io: 4
+    fastapi.tiangolo.com: 4
+    kubernetes.io: 4
+  title_similarity_threshold: 0.92
+  snippet_similarity_threshold: 0.9

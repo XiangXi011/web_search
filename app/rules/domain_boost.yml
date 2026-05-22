@@ -1,0 +1,23 @@
+boosts:
+  github.com: 0.25
+  docs.python.org: 0.30
+  developer.mozilla.org: 0.30
+  learn.microsoft.com: 0.25
+  kubernetes.io: 0.25
+  fastapi.tiangolo.com: 0.25
+  python.langchain.com: 0.25
+  langchain-ai.github.io: 0.25
+  arxiv.org: 0.20
+  stackoverflow.com: 0.20
+  pypi.org: 0.20
+  npmjs.com: 0.15
+  docs.github.com: 0.25
+
+penalties:
+  csdn.net: -0.25
+  jianshu.com: -0.25
+  zhihu.com: -0.25
+  baijiahao.baidu.com: -0.25
+  sohu.com: -0.20
+  163.com: -0.20
+  toutiao.com: -0.20

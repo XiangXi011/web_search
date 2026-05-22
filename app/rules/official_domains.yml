@@ -1,0 +1,43 @@
+official_doc_patterns:
+  - "^docs\\."
+  - "\\.readthedocs\\.io$"
+  - "\\.github\\.io$"
+  - "developer\\.mozilla\\.org"
+  - "learn\\.microsoft\\.com"
+  - "docs\\.python\\.org"
+  - "kubernetes\\.io/docs"
+  - "fastapi\\.tiangolo\\.com"
+  - "python\\.langchain\\.com"
+  - "langchain-ai\\.github\\.io"
+  - "docs\\.github\\.com"
+  - "docs\\.docker\\.com"
+  - "docs\\.redis\\.io"
+  - "docs\\.pypi\\.org"
+  - "docs\\.npmjs\\.com"
+  - "nodejs\\.org"
+  - "docs\\.nodejs\\.org"
+  - "flask\\.palletsprojects\\.com"
+  - "docs\\.djangoproject\\.com"
+  - "sqlalchemy\\.readthedocs\\.io"
+  - "pytest\\.org"
+  - "docs\\.pytest\\.org"
+
+package_registries:
+  - "pypi\\.org"
+  - "npmjs\\.com/package"
+
+academic_domains:
+  - "arxiv\\.org"
+  - "crossref\\.org"
+  - "openalex\\.org"
+  - "pubmed\\.ncbi\\.nlm\\.nih\\.gov"
+  - "doi\\.org"
+  - "ieee\\.org"
+  - "acm\\.org"
+  - "springer\\.com"
+  - "sciencedirect\\.com"
+
+government_domains:
+  - "\\.gov\\.cn"
+  - "\\.gov\\.hk"
+  - "\\.gov"

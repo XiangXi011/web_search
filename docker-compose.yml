@@ -1,0 +1,30 @@
+services:
+  search-gateway:
+    build: .
+    container_name: search-gateway
+    ports:
+      - "8011:8011"
+    environment:
+      - CONFIG_PATH=/app/config.yml
+    depends_on:
+      - redis
+      - searxng
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: search-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./searxng:/etc/searxng
+    environment:
+      - SEARXNG_BASE_URL=http://localhost:8080/
+    restart: unless-stopped

@@ -1,0 +1,5 @@
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests that require running SearXNG + Redis (deselect with '-m \"not integration\"')",
+]
+asyncio_mode = "auto"

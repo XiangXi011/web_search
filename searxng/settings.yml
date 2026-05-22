@@ -1,0 +1,63 @@
+general:
+  debug: false
+  instance_name: "Search Gateway SearXNG"
+
+search:
+  safe_search: 1
+  autocomplete: ""
+  default_lang: "zh-CN"
+  formats:
+    - html
+    - json
+
+server:
+  port: 8080
+  bind_address: "0.0.0.0"
+  secret_key: "search-gateway-searxng-secret-key-change-in-production"
+  limiter: false
+  image_proxy: false
+
+outgoing:
+  request_timeout: 3.0
+  max_request_timeout: 5.0
+  pool_connections: 100
+  pool_maxsize: 20
+  enable_http2: true
+
+redis:
+  url: false
+
+ui:
+  default_theme: simple
+  query_in_title: false
+  infinite_scroll: false
+  center_alignment: false
+  default_locale: "zh"
+  theme_args:
+    simple_style: auto
+
+enabled_plugins:
+  - 'Hash plugin'
+  - 'Self Informations'
+  - 'Tracker URL remover'
+  - 'Ahmia blacklist'
+
+use_default_settings:
+  engines:
+    keep_only:
+      - bing
+      - 360search
+      - sogou
+      - quark
+      - baidu
+      - sogou wechat
+      - yandex
+      - github
+      - stackoverflow
+      - pypi
+      - npm
+      - mdn
+      - microsoft learn
+      - arxiv
+      - crossref
+      - openalex
