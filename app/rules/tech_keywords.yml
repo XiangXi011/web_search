@@ -1,54 +1,131 @@
 tech_keywords:
+  # Version control & collaboration
   - github
   - repo
-  - docker
-  - api
-  - sdk
-  - npm
-  - pypi
+  - git clone
+  - commit
+  - pull request
+  - merge request
+  - issue
+  - bug
+  - workaround
+
+  # Python ecosystem
   - python
+  - pip
+  - pypi
+  - pyproject.toml
+  - requirements.txt
+  - fastapi
+  - django
+  - flask
   - langchain
   - langgraph
   - mcp
   - vllm
-  - fastapi
-  - redis
+  - pytorch
+  - tensorflow
+  - transformers
+  - conda
+  - pytest
+  - numpy
+  - pandas
+
+  # JavaScript / TypeScript ecosystem
+  - javascript
+  - typescript
+  - npm
+  - node.js
+  - react
+  - vue
+  - angular
+  - next.js
+  - nuxt
+  - package.json
+  - webpack
+  - vite
+  - eslint
+
+  # Go / Rust / Java
+  - golang
+  - rust
+  - cargo
+  - java
+  - spring boot
+  - gradle
+  - maven
+
+  # Infrastructure & DevOps
+  - docker
+  - dockerfile
+  - docker-compose
   - kubernetes
   - k8s
   - nginx
+  - terraform
+  - ansible
+  - helm
+  - prometheus
+  - grafana
+  - jenkins
+  - github actions
+  - ci/cd
+  - aws
+  - gcp
+  - azure
+
+  # System & OS
   - linux
   - windows
   - powershell
+  - bash
+  - shell
+
+  # General tech terms
+  - api
+  - sdk
+  - rest api
+  - graphql
+  - websocket
+  - microservice
+  - redis
+  - mysql
+  - postgresql
+  - mongodb
+  - elasticsearch
+  - kafka
+  - rabbitmq
+
+  # AI / ML
+  - llm
+  - gpt
+  - claude
+  - openai
+  - anthropic
+  - embedding
+  - vector database
+  - rag
+  - fine-tuning
+  - stable diffusion
+  - midjourney
+
+  # Error / debugging (Chinese)
   - 报错
-  - error
-  - exception
-  - "stack trace"
-  - install
-  - deploy
-  - 配置
   - 启动失败
+  - 配置
   - 端口
   - 日志
   - 依赖
-  - pip
-  - npm install
-  - traceback
+  - 安装失败
+
+  # Error / debugging (English)
+  - error
+  - exception
+  - stack trace
   - traceback
   - failed
   - cannot import
-  - "module not found"
   - module not found
-  - requirements.txt
-  - pyproject.toml
-  - package.json
-  - dockerfile
-  - docker-compose
-  - git clone
-  - commit
-  - pull request
-  - pr
-  - issue
-  - bug
-  - fix
-  - workaround
+  - install
+  - deploy
   - solution

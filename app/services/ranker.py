@@ -126,7 +126,9 @@ def _engine_consensus_score(item: dict, total_engines: int) -> float:
 
 def rank_results(raw_results: list[dict], query: str, profile: str) -> list[dict]:
     cfg = gateway_config.scoring
-    weights = cfg.weights
+    # Per-profile weight override: fresh_cn boosts freshness, general_cn boosts keyword_match
+    profile_cfg = gateway_config.profiles.get(profile)
+    weights = profile_cfg.scoring_weights if profile_cfg and profile_cfg.scoring_weights else cfg.weights
     source_scores = cfg.source_type_scores
 
     # First pass: classify and compute scores

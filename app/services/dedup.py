@@ -37,13 +37,19 @@ def deduplicate_results(raw_results: list[dict]) -> list[dict]:
 
         # Title similarity
         title = item.get("title", "")
-        if title and _has_similar_title(final, title, cfg.title_similarity_threshold):
-            continue
+        if title:
+            match = _find_similar_title(final, title, cfg.title_similarity_threshold)
+            if match:
+                _merge_engine(match, item)
+                continue
 
         # Snippet similarity
         snippet = item.get("content", "") or item.get("snippet", "")
-        if snippet and _has_similar_snippet(final, snippet, cfg.snippet_similarity_threshold):
-            continue
+        if snippet:
+            match = _find_similar_snippet(final, snippet, cfg.snippet_similarity_threshold)
+            if match:
+                _merge_engine(match, item)
+                continue
 
         # Domain limit
         limit = cfg.domain_limits.get(domain, cfg.default_max_per_domain)
@@ -68,17 +74,25 @@ def _merge_into_existing(final: list[dict], item: dict, canonical: str) -> None:
             return
 
 
-def _has_similar_title(final: list[dict], title: str, threshold: float) -> bool:
+def _find_similar_title(final: list[dict], title: str, threshold: float) -> dict | None:
     for existing in final:
         existing_title = existing.get("title", "")
         if existing_title and cosine_similarity(title, existing_title) >= threshold:
-            return True
-    return False
+            return existing
+    return None
 
 
-def _has_similar_snippet(final: list[dict], snippet: str, threshold: float) -> bool:
+def _find_similar_snippet(final: list[dict], snippet: str, threshold: float) -> dict | None:
     for existing in final:
         existing_snippet = existing.get("content", "") or existing.get("snippet", "")
         if existing_snippet and cosine_similarity(snippet, existing_snippet) >= threshold:
-            return True
-    return False
+            return existing
+    return None
+
+
+def _merge_engine(target: dict, item: dict) -> None:
+    engine = item.get("engine", "")
+    if engine:
+        engines = set(target.get("engines", []))
+        engines.add(engine)
+        target["engines"] = list(engines)

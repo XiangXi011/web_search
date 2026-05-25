@@ -36,6 +36,8 @@ academic_domains:
   - "acm\\.org"
   - "springer\\.com"
   - "sciencedirect\\.com"
+  - "cnki\\.net"
+  - "wanfangdata\\.com\\.cn"
 
 government_domains:
   - "\\.gov\\.cn"

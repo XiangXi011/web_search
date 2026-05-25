@@ -43,13 +43,6 @@ class CooldownConfig(BaseModel):
     connection_fail_seconds: int = 180
 
 
-class ProfileConfig(BaseModel):
-    engines: list[str]
-    language: str = "all"
-    time_range: str | None = None
-    timeout_seconds: float = 3.5
-
-
 class ScoringWeights(BaseModel):
     searxng_score: float = 0.25
     domain_authority: float = 0.25
@@ -57,6 +50,14 @@ class ScoringWeights(BaseModel):
     source_type: float = 0.15
     engine_consensus: float = 0.10
     freshness: float = 0.05
+
+
+class ProfileConfig(BaseModel):
+    engines: list[str]
+    language: str = "all"
+    time_range: str | None = None
+    timeout_seconds: float = 3.5
+    scoring_weights: ScoringWeights | None = None
 
 
 class ScoringConfig(BaseModel):

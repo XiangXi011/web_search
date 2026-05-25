@@ -1,4 +1,5 @@
 boosts:
+  # English documentation sites
   github.com: 0.25
   docs.python.org: 0.30
   developer.mozilla.org: 0.30
@@ -13,11 +14,28 @@ boosts:
   npmjs.com: 0.15
   docs.github.com: 0.25
 
+  # Chinese high-value domains
+  gov.cn: 0.30
+  edu.cn: 0.25
+  cnki.net: 0.20
+  ruanyifeng.com: 0.20
+  juejin.cn: 0.10
+  segmentfault.com: 0.10
+  infoq.cn: 0.10
+  cnblogs.com: 0.05
+
 penalties:
+  # Content farms (heavy penalty)
   csdn.net: -0.25
   jianshu.com: -0.25
-  zhihu.com: -0.25
   baijiahao.baidu.com: -0.25
+
+  # Low-quality aggregators
   sohu.com: -0.20
   163.com: -0.20
   toutiao.com: -0.20
+  baidu.com: -0.15
+  bilibili.com: -0.10
+
+  # Adjusted: zhihu has decent technical answers
+  zhihu.com: -0.10

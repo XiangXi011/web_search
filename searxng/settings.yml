@@ -1,11 +1,13 @@
+use_default_settings: true
+
 general:
   debug: false
   instance_name: "Search Gateway SearXNG"
 
 search:
-  safe_search: 1
+  safe_search: 0
   autocomplete: ""
-  default_lang: "zh-CN"
+  default_lang: "auto"
   formats:
     - html
     - json
@@ -18,8 +20,8 @@ server:
   image_proxy: false
 
 outgoing:
-  request_timeout: 3.0
-  max_request_timeout: 5.0
+  request_timeout: 10.0
+  max_request_timeout: 15.0
   pool_connections: 100
   pool_maxsize: 20
   enable_http2: true
@@ -32,9 +34,6 @@ ui:
   query_in_title: false
   infinite_scroll: false
   center_alignment: false
-  default_locale: "zh"
-  theme_args:
-    simple_style: auto
 
 enabled_plugins:
   - 'Hash plugin'
@@ -42,22 +41,43 @@ enabled_plugins:
   - 'Tracker URL remover'
   - 'Ahmia blacklist'
 
-use_default_settings:
-  engines:
-    keep_only:
-      - bing
-      - 360search
-      - sogou
-      - quark
-      - baidu
-      - sogou wechat
-      - yandex
-      - github
-      - stackoverflow
-      - pypi
-      - npm
-      - mdn
-      - microsoft learn
-      - arxiv
-      - crossref
-      - openalex
+engines:
+  # China search engines (general_cn, fresh_cn profiles)
+  - name: baidu
+    disabled: false
+  - name: sogou
+    disabled: false
+  - name: 360search
+    disabled: false
+  - name: quark
+    disabled: false
+  - name: sogou wechat
+    disabled: false
+
+  # General search engines
+  - name: bing
+    disabled: false
+  - name: yandex
+    disabled: false
+
+  # Tech profile engines
+  - name: github
+    disabled: false
+  - name: stackoverflow
+    disabled: false
+  - name: pypi
+    disabled: false
+  - name: npm
+    disabled: false
+  - name: mdn
+    disabled: false
+  - name: microsoft learn
+    disabled: false
+
+  # Research profile engines
+  - name: arxiv
+    disabled: false
+  - name: crossref
+    disabled: false
+  - name: openalex
+    disabled: false

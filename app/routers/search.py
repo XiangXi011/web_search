@@ -37,6 +37,58 @@ from app.utils.url import get_domain
 
 router = APIRouter(prefix="/v1")
 
+_SOURCE_LABELS = {
+    "official_doc": "官方文档",
+    "github_repo": "GitHub 仓库",
+    "github_issue": "GitHub Issue/PR",
+    "academic": "学术论文",
+    "package_registry": "包注册中心",
+    "government": "政府网站",
+    "vendor_blog": "技术博客",
+    "community": "技术社区",
+    "media": "新闻媒体",
+    "wechat_article": "微信文章",
+    "content_farm": "内容农场",
+    "seo_spam": "SEO 垃圾",
+}
+
+
+def _build_why_selected(breakdown: dict, source_type: str, domain: str, engines: list[str]) -> str:
+    parts: list[str] = []
+
+    # Top contributing factor (excluding penalty)
+    factors = {k: v for k, v in breakdown.items() if k != "penalty" and v > 0}
+    if factors:
+        top_factor = max(factors, key=factors.get)
+        top_val = factors[top_factor]
+        factor_labels = {
+            "keyword_match": "关键词匹配度高",
+            "domain_authority": "域名权威度高",
+            "searxng_score": "搜索引擎评分高",
+            "source_type": "来源类型优质",
+            "engine_consensus": "多引擎共识",
+            "freshness": "内容新鲜",
+        }
+        if top_val >= 0.5 and top_factor in factor_labels:
+            parts.append(factor_labels[top_factor])
+
+    # Source type label
+    src_label = _SOURCE_LABELS.get(source_type)
+    if src_label:
+        parts.append(src_label)
+    else:
+        parts.append(domain)
+
+    # Multi-engine consensus
+    if len(engines) >= 2:
+        parts.append(f"{len(engines)} 引擎共现")
+
+    # Penalty warning
+    if breakdown.get("penalty", 0) > 0:
+        parts.append("有质量惩罚")
+
+    return " | ".join(parts)
+
 
 @router.post("/search", response_model=SearchResponse)
 async def search(req: SearchRequest) -> SearchResponse:
@@ -135,21 +187,7 @@ async def search(req: SearchRequest) -> SearchResponse:
         breakdown = item.get("_breakdown", {})
         engines_list = list(item.get("engines", []))
 
-        why = ""
-        if source_type == "official_doc":
-            why = "官方文档域名"
-        elif source_type == "github_repo":
-            why = "GitHub 项目仓库"
-        elif source_type == "github_issue":
-            why = "GitHub Issue / PR"
-        elif source_type == "academic":
-            why = "学术论文来源"
-        elif "stackoverflow" in domain:
-            why = "StackOverflow 技术问答"
-        elif source_type == "community":
-            why = "技术社区讨论"
-        else:
-            why = f"{domain} 来源"
+        why = _build_why_selected(breakdown, source_type, domain, engines_list)
 
         results.append(
             SearchResultItem(
@@ -180,25 +218,55 @@ async def search(req: SearchRequest) -> SearchResponse:
         gateway_config.search.enable_commercial_fallback
         and len(results) < gateway_config.search.min_results_before_fallback
     ):
-        fb_results, fb_provider = await fallback_orchestrator.search(query, limit)
-        if fb_results:
+        fb_raw, fb_provider = await fallback_orchestrator.search(query, limit)
+        if fb_raw:
             fallback_used = True
             used_engines.add(f"fallback:{fb_provider}")
-            for fb in fb_results:
-                fb_domain = get_domain(fb.get("url", ""))
-                fb_source = classify_source(fb.get("url", ""), fb.get("title", ""), fb.get("snippet", ""))
+            # Enrich fallback results with engine info and run through ranker
+            for fb in fb_raw:
+                fb.setdefault("engine", f"fallback:{fb_provider}")
+                fb.setdefault("engines", [f"fallback:{fb_provider}"])
+            fb_ranked = rank_results(fb_raw, query, profile)
+            # Merge ranked fallback into results and re-sort by score
+            all_ranked = []
+            for item in ranked[:limit]:
+                all_ranked.append(("searxng", item))
+            for item in fb_ranked:
+                all_ranked.append(("fallback", item))
+            all_ranked.sort(key=lambda x: x[1].get("_final_score", 0), reverse=True)
+            # Rebuild results list
+            results = []
+            for idx, (source, item) in enumerate(all_ranked[:limit], start=1):
+                url = item.get("url", "")
+                title = item.get("title", "")
+                snippet = item.get("content", "") or item.get("snippet", "")
+                domain = get_domain(url)
+                source_type = item.get("_source_type", "unknown")
+                breakdown = item.get("_breakdown", {})
+                engines_list = list(item.get("engines", []))
+                why = _build_why_selected(breakdown, source_type, domain, engines_list)
+                if source == "fallback":
+                    why = f"商业补充 ({fb_provider}) | {why}"
                 results.append(
                     SearchResultItem(
-                        rank=len(results) + 1,
-                        title=fb.get("title", ""),
-                        url=fb.get("url", ""),
-                        snippet=fb.get("snippet", ""),
-                        domain=fb_domain,
-                        source_type=fb_source,
-                        confidence=0.5,
-                        confidence_breakdown=ConfidenceBreakdown(),
-                        engines=[f"fallback:{fb_provider}"],
-                        why_selected=f"商业 fallback ({fb_provider})",
+                        rank=idx,
+                        title=title,
+                        url=url,
+                        snippet=snippet,
+                        domain=domain,
+                        source_type=source_type,
+                        confidence=round(item.get("_final_score", 0.0), 4),
+                        confidence_breakdown=ConfidenceBreakdown(
+                            searxng_score=breakdown.get("searxng_score", 0.0),
+                            domain_authority=breakdown.get("domain_authority", 0.0),
+                            keyword_match=breakdown.get("keyword_match", 0.0),
+                            engine_consensus=breakdown.get("engine_consensus", 0.0),
+                            freshness=breakdown.get("freshness", 0.0),
+                            source_type=breakdown.get("source_type", 0.0),
+                            penalty=breakdown.get("penalty", 0.0),
+                        ),
+                        engines=engines_list,
+                        why_selected=why,
                     )
                 )
 

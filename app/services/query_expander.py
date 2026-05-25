@@ -12,6 +12,21 @@ def _extract_github_url(query: str) -> str | None:
     return None
 
 
+_CN_STOPWORDS = frozenset({
+    "的", "了", "吗", "呢", "吧", "啊", "呀", "哦", "哈",
+    "是", "在", "有", "不", "也", "和", "与", "或", "及",
+    "什么", "怎么", "如何", "哪个", "哪些", "为什么", "哪",
+    "可以", "能", "会", "要", "想", "需要",
+    "我", "你", "他", "她", "它", "们", "这", "那",
+})
+
+_CN_SITE_VARIANTS = [
+    "site:gov.cn",
+    "site:zhihu.com",
+    "site:juejin.cn",
+]
+
+
 def expand(query: str, profile: str) -> list[str]:
     variants = [query]
 
@@ -19,8 +34,8 @@ def expand(query: str, profile: str) -> list[str]:
         variants = _expand_tech(query)
     elif profile == "research":
         variants = _expand_research(query)
-    elif profile == "fresh_cn":
-        variants = [query]
+    elif profile in ("general_cn", "fresh_cn", "wechat"):
+        variants = _expand_cn(query, profile)
 
     return variants[:4]
 
@@ -76,3 +91,43 @@ def _expand_research(query: str) -> list[str]:
     if "paper" not in query.lower():
         variants.append(f"{query} paper")
     return list(dict.fromkeys(variants))[:4]
+
+
+def _expand_cn(query: str, profile: str) -> list[str]:
+    variants = [query]
+
+    # Strip stopwords for a cleaner variant
+    cleaned = _strip_cn_stopwords(query)
+    if cleaned and cleaned != query:
+        variants.append(cleaned)
+
+    # English keyword extraction (keep Latin words)
+    english = re.sub(r"[一-鿿\s]+", " ", query).strip()
+    if english and len(english) > 2:
+        variants.append(english)
+
+    # Site-specific variants for wechat
+    if profile == "wechat":
+        variants.append(f"site:mp.weixin.qq.com {query}")
+
+    return list(dict.fromkeys(variants))[:4]
+
+
+def _strip_cn_stopwords(query: str) -> str:
+    # Remove trailing stopwords/question particles
+    text = query
+    for _ in range(3):  # strip up to 3 trailing particles
+        stripped = False
+        for sw in ("的", "了", "吗", "呢", "吧", "啊", "呀", "哦"):
+            if text.endswith(sw) and len(text) > 2:
+                text = text[:-len(sw)]
+                stripped = True
+                break
+        if not stripped:
+            break
+    # Remove leading question words
+    for prefix in ("怎么", "如何", "什么是", "什么是", "请问", "求教"):
+        if text.startswith(prefix) and len(text) > len(prefix) + 1:
+            text = text[len(prefix):]
+            break
+    return text.strip()

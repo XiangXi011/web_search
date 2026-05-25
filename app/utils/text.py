@@ -3,11 +3,34 @@ from __future__ import annotations
 import math
 import re
 
+import jieba
+
+_CJK_RE = re.compile(r"[一-鿿]+")
+_LATIN_RE = re.compile(r"[a-z0-9]+")
+
 
 def tokenize(text: str) -> set[str]:
     lowered = text.lower()
-    words = re.findall(r"[a-z0-9一-鿿]+", lowered)
-    return set(words)
+    tokens: set[str] = set()
+
+    # Split into CJK and non-CJK segments
+    pos = 0
+    for m in re.finditer(r"[一-鿿]+", lowered):
+        # Latin tokens before this CJK segment
+        for w in _LATIN_RE.findall(lowered[pos:m.start()]):
+            tokens.add(w)
+        # CJK: jieba search-mode segmentation (granular) + original substring
+        cjk = m.group()
+        tokens.add(cjk)
+        for w in jieba.cut_for_search(cjk):
+            if len(w) > 1:
+                tokens.add(w)
+        pos = m.end()
+    # Trailing Latin tokens
+    for w in _LATIN_RE.findall(lowered[pos:]):
+        tokens.add(w)
+
+    return tokens
 
 
 def jaccard_similarity(a: str, b: str) -> float:
